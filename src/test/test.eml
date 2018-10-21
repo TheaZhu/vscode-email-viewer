@@ -1,0 +1,157 @@
+Return-Path: <linux-kernel-owner@vger.kernel.org>
+Delivered-To: unknown
+Received: from pop3.zju.edu.cn (61.164.42.155:110) by mac4dev.local with
+  POP3; 19 Oct 2018 10:25:24 -0000
+Received: from icoremail.net (unknown [209.85.210.175])
+	by mail-app4 (Coremail) with SMTP id cS_KCgD3__PY_8hbEE8HAQ--.7645S3;
+	Fri, 19 Oct 2018 05:49:13 +0800 (CST)
+Received: from mail-pf1-f175.google.com (unknown [209.85.210.175])
+	by mx2.icoremail.net (Coremail) with SMTP id AQAAfwAHHyXW_8hb9lsDAA--.6284S3;
+	Fri, 19 Oct 2018 05:49:11 +0800 (CST)
+Received: by mail-pf1-f175.google.com with SMTP id f26-v6so15479527pfn.9
+        for <xuliker@zju.edu.cn>; Thu, 18 Oct 2018 14:49:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:delivered-to:dkim-signature:from:to:cc:subject
+         :date:message-id:mime-version:content-transfer-encoding:sender
+         :precedence:list-id;
+        bh=lNv++1abTTRnYPMGGuIwfM1wdQiQQQZALUdqCqNOOL8=;
+        b=i7SLcsBlCl0P/PjRVoD7ONUT73YCOIkWnmXsdusAIva8OWtTUE7ktMagtL2DJOn9wl
+         huygV9rbSOIe2Y8E7HSiBDnbAbxXzWBR5nDOGE5vewkcasFm+4wMyeHQ9zCH3u63Tcdm
+         JH3FVyd5Xcg2xej+vKutSbe7+JPnhRLHYu0TowFumcPyGX3hLEBsE1dqW528mBd7cNxm
+         ZdidVX7ErhyglUqpS9uZWWtdwLM5LGVZ8b2X9wyMO/tQupfcZ50XROxsG7TY7psbVjix
+         qfJyxv+EXTfL9lc58xYAKzWYwIfKi4Yhp5J+r5VFNfBcCwgszABF6nYfWJMVoC4lkVP6
+         O+BQ==
+X-Gm-Message-State: ABuFfohR0WA5gbyzrSAfxSZCDrPW9C3JstHs8VxgH8uFYHHif2RSGdvr
+	XrnOc+d8V9zKVrZzA5TRTFqVdT07AEoeXy4rbGcrCDKirC56iS8IDw==
+X-Received: by 2002:a62:7107:: with SMTP id m7-v6mr24485478pfc.56.1539899350668;
+        Thu, 18 Oct 2018 14:49:10 -0700 (PDT)
+X-Forwarded-To: xuliker@zju.edu.cn
+X-Forwarded-For: liker.xu@gmail.com xuliker@zju.edu.cn
+Delivered-To: liker.xu@gmail.com
+Received: by 2002:a17:90a:c304:0:0:0:0 with SMTP id g4-v6csp2583131pjt;
+        Thu, 18 Oct 2018 14:49:09 -0700 (PDT)
+X-Google-Smtp-Source: ACcGV61HKUSVU1YpQF1yfl+XChfFRoJn/zUuHaeqoTsBhra6HJa0x2+mJNQMhELY3sRxCvwfCu5F
+X-Received: by 2002:a63:6444:: with SMTP id y65-v6mr6871948pgb.205.1539899349812;
+        Thu, 18 Oct 2018 14:49:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1539899349; cv=none;
+        d=google.com; s=arc-20160816;
+        b=Msf8VUPMVB35GRypvoZYo4aw1EVtDXjpmFj5fpYhjpBa5zjMxqSDhXw25djZKVZbXX
+         oAeiyFrQHvVjcAKPj5UitD1uAd4X4wV7ct793pSomyN7y9NCziZhs/aosVF22SXAB3Bc
+         5hfPMvvcbU7xR+wy4QCnzVzDyM4VbwpenPG+fvxFjApDd84ruzDxqpKCuNG+RKJT3q8N
+         Menr6UIHIOQV4rhedTRMsOAiATMpIf7hYy0kcKeD6c14IyCmI4C69Fnl8B9UqUuCspTz
+         7QIokQSILjy9OIATaA4LXMTMVlaOigxXbeNqZd/4Fc0P5T7iYLJevPc6DifJcBCLhpIY
+         pVKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=list-id:precedence:sender:content-transfer-encoding:mime-version
+         :message-id:date:subject:cc:to:from:dkim-signature;
+        bh=lNv++1abTTRnYPMGGuIwfM1wdQiQQQZALUdqCqNOOL8=;
+        b=kLfJ/ivFZ1L4JEjXlh8xM2ATlYbQHF03c+3MdaayOe2BkVnyrZ6JsO2y6fwFJP1gYW
+         Qb0Jxa3W/Ffcc8EpSSv0PI87WizQ2TOtO19N2p0StLvnnRTEpXMzw1siLQJl/QFoUFT7
+         MtQfwYJfIHygcYB31Aa+fqZCmM4RqMo6SSZePyDqsNG95KDhOk3maAPQyxnvqMKV1HNw
+         nts2LXZFzFovNRCyaeVsuS9Y+I+HvvRxddYLv/uu5GLG3TUfc4mud6qeppAVW4tihxDs
+         m+DDmX+jNedLK9Jf1AqCkcQjEURK9kIWbqAgVA9pjj1xGBkGs43RRdni+xtZA846VxDQ
+         wB2Q==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20161025 header.b="itjFww/i";
+       spf=pass (google.com: best guess record for domain of linux-kernel-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mailfrom=linux-kernel-owner@vger.kernel.org;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id w24-v6si21509100pll.346.2018.10.18.14.48.58;
+        Thu, 18 Oct 2018 14:49:09 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of linux-kernel-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1726489AbeJSFvu (ORCPT <rfc822;jeliantsurux@gmail.com>
+        + 71 others); Fri, 19 Oct 2018 01:51:50 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33661 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725738AbeJSFvu (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 19 Oct 2018 01:51:50 -0400
+Received: by mail-wr1-f68.google.com with SMTP id e4-v6so35291711wrs.0;
+        Thu, 18 Oct 2018 14:48:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lNv++1abTTRnYPMGGuIwfM1wdQiQQQZALUdqCqNOOL8=;
+        b=itjFww/ircLy9jzzboIwitT3h/iCC3y2+tdvn3H55Bu0YYaNB3CtpKXtv9ktpoBM5g
+         DJ3lABnIPbZxjDjI4LNVQCOHTO84eYFY5i9TocNoYD+u3yHuDy/9Ebzdc433/m2ouTxb
+         0NhcsK3hK1xqsEcg7ckIAGDPssxEG97kpYI59J7cOA4/8I0SkiXFF5EAd0WcF0fuD9CC
+         QGUMV3wyPc0AyeU7QTcIvikL6DJY6eyiCTi0raoeqMKYWTgPg/LEmTS7FmAVSqvSXU+D
+         0eJbEas5WVhBnHgC/36xtZ9y1frCSYDt7sabjjEN9bFaZpNv7oquohM5wT4q3dsvsfGF
+         2Kvg==
+X-Received: by 2002:adf:f14a:: with SMTP id y10-v6mr29716831wro.29.1539899329706;
+        Thu, 18 Oct 2018 14:48:49 -0700 (PDT)
+Received: from localhost.localdomain ([2a01:4f8:10b:24a5::2])
+        by smtp.gmail.com with ESMTPSA id z2-v6sm15139791wrh.8.2018.10.18.14.48.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 18 Oct 2018 14:48:49 -0700 (PDT)
+From: Nathan Chancellor <natechancellor@gmail.com>
+To: Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] rtc: s35390a: Make buf an unsigned char in s35390a_init
+Date: Thu, 18 Oct 2018 14:42:07 -0700
+Message-Id: <20181018214207.4223-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.19.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Sender: liker.xu+caf_=xuliker=zju.edu.cn@gmail.com
+Precedence: bulk
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+X-CM-TRANSID: AQAAfwAHHyXW_8hb9lsDAA--.6284S3
+Authentication-Results: mail-app4; spf=pass smtp.mail=liker.xu+caf_=xu
+	liker=zju.edu.cn@gmail.com;
+X-Coremail-Antispam: 1UD129KBjvdXoW7GFW7uF47ur4UWw4rtw47Arb_yoWDCFg_Cr
+	y7Jw18WFn8try0k39rWFyDCFyjga1jqr1Iqa10g3s8Ar45ZFZYga4UXr4kAw1rGrs3tF98
+	XFZ3Ar1kZF1jgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAU7a7-sFnT
+	9fnUUIcSsGvfJTRUUUbqkYjsxI4VW3JwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1IIY67AE
+	w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+	IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2
+	jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+	x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+	GwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+	8JMx02cVCv0xWlc7CjxVAKzI0EY4vE52x082I5MxkFs20EY4vE44CYbxCE4x80FwCY02Av
+	z4vEIxC_CwCY0x0Ix7I2Y4AK64vIr41lcIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lcIIF0x
+	vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCYIxAIcVC2z280aVAFwI0_Gr1j6F4UJwCYIxAI
+	cVC2z280aVCY1x0267AKxVW8Jr0_Cr1UMxAIw28IcxkI7VAKI48JMxAIw28IcVAKzI0EY4
+	vE52x082I5MxCjnVCjjxCrMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_
+	Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x
+	0EwIxGrwCI42IY6xAIw20EY4v20xvaj40_Zr0_Wr1UYxBIdaVFxhVjvjDU0xZFpf9x07bo
+	WlgUUUUU=
+
+Clang warns:
+
+drivers/rtc/rtc-s35390a.c:124:27: warning: implicit conversion from
+'int' to 'char' changes value from 192 to -64 [-Wconstant-conversion]
+        buf = S35390A_FLAG_RESET | S35390A_FLAG_24H;
+            ~ ~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+1 warning generated.
+
+Update buf to be an unsigned char, which matches the size and signedness
+of the buf member in struct i2c_msg (__u8).
+
+https://github.com/ClangBuiltLinux/linux/issues/145
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/rtc/rtc-s35390a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/rtc/rtc-s35390a.c b/drivers/rtc/rtc-s35390a.c
+index 77feb603cd4c..9fd51337cfae 100644
+--- a/drivers/rtc/rtc-s35390a.c
++++ b/drivers/rtc/rtc-s35390a.c
+@@ -108,7 +108,7 @@ static int s35390a_get_reg(struct s35390a *s35390a, int reg, char *buf, int len)
+ 
+ static int s35390a_init(struct s35390a *s35390a)
+ {
+-	char buf;
++	unsigned char buf;
+ 	int ret;
+ 	unsigned initcount = 0;
+ 
+-- 
+2.19.1

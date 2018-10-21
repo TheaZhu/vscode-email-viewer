@@ -1,24 +1,52 @@
 {
     "name": "email-viewer",
     "displayName": "email-viewer",
-    "description": "",
+    "description": "Beautify EML in Visual Studio Code.",
     "version": "0.0.1",
-    "publisher": "EmailViewer2",
+    "publisher": "Thea",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TheaZhu/vscode-email-viewer.git"
+    },
     "engines": {
         "vscode": "^1.28.0"
     },
     "categories": [
-        "Other"
+        "Formatters"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "workspaceContains:**/*.eml",
+        "onFileSystem:eml"
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
+        "languages": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "id": "eml",
+                "aliases": [
+                    "email",
+                    "Email",
+                    "EMAIL",
+                    "eml",
+                    "EML"
+                ],
+                "extensions": [
+                    ".eml",
+                    ".EML",
+                    ".msg", 
+                    ".mbox"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "eml",
+                "scopeName": "text.html.eml",
+                "path": "./syntaxes/eml.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.html": "html"
+                }
             }
         ]
     },
@@ -30,10 +58,19 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.21",
-        "tslint": "^5.8.0",
+        "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.25",
-        "@types/mocha": "^2.2.42"
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.21"
+    },
+    "dependencies": {
+        "@types/fs-extra": "^5.0.4",
+        "@types/mailparser": "^2.0.2",
+        "@types/pretty-bytes": "^5.1.0",
+        "fs-extra": "^7.0.0",
+        "mailparser": "^2.3.4",
+        "path": "^0.12.7",
+        "pretty-bytes": "^5.1.0"
     }
 }

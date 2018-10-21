@@ -1,0 +1,86 @@
+{
+	"name": "Email",
+	"scopeName": "text.html.eml",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#embedded-html"
+		}
+	],
+	"repository": {
+		"embedded-html": {
+			"patterns": [
+				{
+					"name": "meta.embedded.block.html",
+					"begin": "(?i)<(!DOCTYPE\\s*)?(html)>",
+					"end": "</(html)>",
+					"beginCaptures": {
+						"1": { "name": "meta.tag.metadata.doctype.html" },
+						"2": { "name": "entity.name.tag.html" }
+					},
+					"endCaptures": {
+						"1": { "name": "entity.name.tag.html" }
+					},
+					"patterns": [{ "include": "text.html.basic" }]
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.eml.header",
+					"match": "^([\\w\\-]+:)"
+				},
+				{
+					"name": "variable.other.eml.address",
+					"match": "(<?[\\w\\.\\-\\+=]*@[\\w\\.-]*>?)"
+				},
+				{
+					"name": "variable.name.eml.blankaddress",
+					"match": "<>"
+				},
+				{
+					"name": "entity.name.function.domain",
+					"match": "\\b(\\w[\\w\\.-]*\\.[\\w\\.-]*\\w[a-zA-Z]+)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.email",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.email",
+					"match": "\\\\."
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"match": "\\s[<\\[\\(]*?((\\d?\\d|1\\d\\d|2[0-4]\\d|25[0-5])\\.){3}(\\d?\\d|1\\d\\d|2[0-4]\\d|25[0-5])[>\\]\\)]*?\\s",
+					"name": "constant.numeric.ipv4"
+				},
+				{
+					"match": "(\\s|=)([A-Za-z]+/[A-Za-z\\-]+)\\b",
+					"captures": {
+						"2": { "name": "constant.other.eml.contenttype" }
+					}
+				},
+				{
+					"match": "(?i)\\b(base64|smtp|utf\\-8)\\b",
+					"name": "constant.language.eml"
+				}
+			]
+		}
+	}
+}
