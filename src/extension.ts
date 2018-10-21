@@ -1,32 +1,29 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+
 import * as vscode from 'vscode';
 import { extname, basename, join } from 'path';
 
 import { EmailFileSystemProvider } from './EmailFileSystemProvider';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "email-viewer" is now active!');
+    const fileSystemProvider = new EmailFileSystemProvider();
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider('eml', fileSystemProvider, {isCaseSensitive: true}));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.previewEml', () => {
+        let previewDocument = vscode.window.activeTextEditor && vscode.window.activeTextEditor.document || undefined;
+        tryPreviewEmailDocument(previewDocument);
+    }));
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => tryPreviewEmailDocument(document)));
 
-    // const fileSystemProvider = new EmailFileSystemProvider();
-    // const emlDisposable = vscode.workspace.registerFileSystemProvider('eml', fileSystemProvider, {isCaseSensitive: true});
-    // const openedDisposable = vscode.workspace.onDidOpenTextDocument(document => tryPreviewEmailDocument(document));
-
-    // context.subscriptions.push(emlDisposable);
-    // context.subscriptions.push(openedDisposable);
-
-    // if (vscode.window.activeTextEditor !== undefined) {
-    //     tryPreviewEmailDocument(vscode.window.activeTextEditor.document);
-    // }
+    if (vscode.window.activeTextEditor !== undefined) {
+        tryPreviewEmailDocument(vscode.window.activeTextEditor.document);
+    }
 }
 
-function tryPreviewEmailDocument(document: vscode.TextDocument) {
+function tryPreviewEmailDocument(document: vscode.TextDocument | undefined) {
+    if (!document) {
+        return;
+    }
     let path = document.uri.path;
     if (path.endsWith('.git')) {
         path = path.substr(0, path.length-4);

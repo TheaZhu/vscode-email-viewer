@@ -125,7 +125,6 @@ export class EmailFileSystemProvider implements FileSystemProvider {
             const entries: [string, FileType][] = [];
             const names = new Set();
 
-            // TODO: Figure out how to resolve this name colliding with attachment file names
             names.add(index);
             entries.push([index, FileType.File]);
 
@@ -145,7 +144,6 @@ export class EmailFileSystemProvider implements FileSystemProvider {
             return entries;
         }
 
-        // TODO: Send to telemetry - doesn't allow reading directories
         return [];
     }
 
@@ -168,7 +166,9 @@ export class EmailFileSystemProvider implements FileSystemProvider {
 
         const index = basename(absolutePath, extension) + 'html';
         if (relativePath === index) {
-            let html = `<i>From</i>: ${email.from}<br/><i>To</i>: ${email.to}<br/><i>Subject</i>: ${email.subject}<hr />`;
+            let html = `<i>From</i>: ${email.from}<br/>`;
+            html += `<i>To</i>: ${email.to}<br/>`;
+            html += `<br/><i>Subject</i>: <strong>${email.subject}</strong><br/><br/><hr />`;
             if (email.attachments.length > 0) {
                 for (const attachment of email.attachments) {
                     const href = `${extension}:/${workspace.asRelativePath(absolutePath)}/${attachment.name}`;
@@ -203,7 +203,6 @@ export class EmailFileSystemProvider implements FileSystemProvider {
     }
 
     async split(uri: Uri): Promise<{ absolutePath: string; extension: 'eml' | 'msg'; relativePath: string; } | undefined> {
-        // Verify we are operating within a workspace (need workspace root to derive the email file path)
         if (workspace.workspaceFolders === undefined) {
             return;
         }
@@ -211,9 +210,7 @@ export class EmailFileSystemProvider implements FileSystemProvider {
         const absolutePart = this.break(workspace.workspaceFolders[0].uri.path);
         const relativePart = this.break(uri.path);
 
-        // Verify the EML or MSG file is in the workspace root directory, we don't support it being elsewhere yet
         if (absolutePart.pop() /* Workspace directory name */ !== relativePart[0]) {
-            // TODO: Send to telemetry to gauge interest in non-root directory support
             return undefined;
         }
 
@@ -227,25 +224,17 @@ export class EmailFileSystemProvider implements FileSystemProvider {
                 if (stat.isFile()) {
                     const extension = extname(filePath).substr(1).toLowerCase();
                     if (extension === 'eml' || extension === 'msg') {
-                        // Return the absolute path of the file and the relative path within it
                         return { absolutePath: filePath, extension, relativePath: join(...components) };
                     } else {
-                        // Handle the case where we found a file but it was not an email file
-                        // TODO: Send to telemetry
                         return;
                     }
                 } else if (stat.isDirectory()) {
-                    // Continue walking up the path until we reach the email file
                     filePath += sep;
                 } else {
-                    // Handle the case where we've reached something that is not a file nor a directory
-                    // TODO: Send to telemetry
                     debugger;
                     return;
                 }
             } catch (error) {
-                // Handle the case where path ceased to exist (should never happen) or be accessible
-                // TODO: Send to telemetry
                 return;
             }
         }
@@ -253,12 +242,10 @@ export class EmailFileSystemProvider implements FileSystemProvider {
 
     private break(path: string) {
         if (path.startsWith('/')) {
-            // Drop leading slash from the path (it is in `path` or the URI of the VS Code workspace root directory)
             path = path.slice('/'.length);
         }
 
         const components = path.split(/[\\/]/g);
-        // Drop the trailing slash in case there is one
         if (components[components.length - 1] === '') {
             components.pop();
         }
@@ -275,7 +262,6 @@ export class EmailFileSystemProvider implements FileSystemProvider {
                 default: return;
             }
         } catch (error) {
-            // TODO: Send to telemetry
             return;
         }
 

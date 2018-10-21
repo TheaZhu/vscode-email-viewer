@@ -2,7 +2,7 @@
     "name": "email-viewer",
     "displayName": "email-viewer",
     "description": "Beautify EML in Visual Studio Code.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "Thea",
     "repository": {
         "type": "git",
@@ -14,12 +14,19 @@
     "categories": [
         "Formatters"
     ],
-    "activationEvents": [
+    "activationEvents": [        
+        "onCommand:extension.previewEml",
         "workspaceContains:**/*.eml",
         "onFileSystem:eml"
     ],
     "main": "./out/extension",
     "contributes": {
+        "commands": [
+            {
+				"command": "extension.previewEml",
+				"title": "Show Email Preview"
+			}
+        ],
         "languages": [
             {
                 "id": "eml",
